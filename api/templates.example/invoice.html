@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="invoice.css">
+    <title>Invoice {{ id }}</title>
+</head>
+<body>
+    <div class="header">
+        <div class="left">
+<!--            <img class="logo" src="logo_full.png" alt="logo" >-->
+            <p>Adr line 1</p>
+            <p>Adr line 2</p>
+            <p>Kvk nr. --------</p>
+        </div>
+
+        <div class="right">
+            <h3>Factuur</h3>
+            <table class="detail">
+                <tr>
+                    <td>E-Mail:</td>
+                    <td>someone@example.com</td>
+                </tr>
+                <tr>
+                    <td>Website:</td>
+                    <td>example.com</td>
+                </tr>
+                <tr>
+                    <td>Telefoon:</td>
+                    <td>06-12345678</td>
+                </tr>
+                <tr>
+                    <td>IBAN:</td>
+                    <td>NL-----------------</td>
+                </tr>
+                <tr>
+                    <td>BTW:</td>
+                    <td>NL------------</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="seperator"></div>
+
+    <div class="header">
+        <table>
+            <tr>
+                <td><b>Aan:</b></td>
+                <td>
+                    <p>{{ owner.name }}</p>
+                    <p>{{ owner.address.name }}</p>
+                    {% if owner.address.line_1 %}<p>{{ owner.address.line_1 }}</p>{% endif %}
+                    {% if owner.address.line_2 %}<p>{{ owner.address.line_2 }}</p>{% endif %}
+                    {% if owner.address.line_3 %}<p>{{ owner.address.line_3 }}</p>{% endif %}
+                    {% if owner.address.line_4 %}<p>{{ owner.address.line_4 }}</p>{% endif %}
+                </td>
+            </tr>
+        </table>
+
+        <div class="right">
+            <table class="detail">
+                <tr>
+                    <td><h4>Factuurnummer:</h4></td>
+                    <td><h4>{{ id }}</h4></td>
+                </tr>
+                <tr>
+                    <td>Factuurdatum:</td>
+                    <td>{{ date_posted }}</td>
+                </tr>
+                <tr>
+                    <td>Te betalen voor:</td>
+                    <td>{{ date_due }}</td>
+                </tr>
+                {% if billing_id %}
+                <tr>
+                    <td>Uw referentie:</td>
+                    <td>{{ billing_id }}</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+
+    <table class="entries">
+        <thead>
+            <tr>
+                <th class="align-center">Datum</th>
+                <th class="align-left w-full">Omschrijving</th>
+                <th class="align-center">Hoeveelheid</th>
+                <th class="align-center">Prijs per eenheid</th>
+                <th class="align-center">Totaal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in entries %}
+                <tr>
+                    <td>{{ entry.date }}</td>
+                    <td>{{ entry.description }}</td>
+                    <td class="disable-fold align-right">{{ entry.quantity | format_european_number }}</td>
+                    <td class="disable-fold align-right">{{ currency_symbol }} {{ entry.inv_price | format_european_money }}</td>
+                    <td class="disable-fold align-right">{{ currency_symbol }} {{ (entry.quantity * entry.inv_price) | format_european_money }}</td>
+                </tr>
+            {% endfor %}
+
+            <tr>
+                <td colspan="4"><b>Bedrag excl. BTW</b></td>
+                <td class="align-right disable-fold">{{ currency_symbol }} {{ total_subtotal | format_european_money }}</td>
+            </tr>
+            <tr>
+                <td colspan="4"><b>Belasting</b></td>
+                <td class="align-right disable-fold">{{ currency_symbol }} {{ total_tax | format_european_money }}</td>
+            </tr>
+            <tr>
+                <td colspan="4"><b>Totaal</b></td>
+                <td class="align-right disable-fold">{{ currency_symbol }} {{ total | format_european_money }}</td>
+            </tr>
+            <tr>
+                <td colspan="4"><b>Verschuldigd bedrag</b></td>
+                <td class="align-right disable-fold">{{ currency_symbol }} {{ total | format_european_money }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p class="footer">Gelieve het verschuldige bedrag binnen 30 dagen over te maken op IBAN NL---------------, onder vermelding van het factuurnummer.</p>
+</body>
+</html>
